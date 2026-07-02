@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Weather Dashboard</title>
+</head>
+<body>
+    <h1>Weather Dashboard</h1>
+    <form id="weather-form">
+        <label for="name_of_city">City Name:</label>
+        <input type="text" id="name_of_city" name="name_of_city" placeholder="Enter city name">
+        <input type="submit" id="search-btn" value="Get weather">
+    </form>
+    <div id="weather-info">
+        <p>Current Weather: <span id="current-weather"></span></p>
+        <p>Temperature: <span id="temperature"></span></p>
+        <p>Humidity: <span id="humidity"></span></p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
