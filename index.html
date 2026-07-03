@@ -7,18 +7,64 @@
     <title>Weather Dashboard</title>
 </head>
 <body>
-    <h1>Weather Dashboard</h1>
+    
     <form id="weather-form">
-        <label for="name_of_city">City Name:</label>
-        <input type="text" id="name_of_city" name="name_of_city" placeholder="Enter city name">
+        <input type="text" id="name_of_city" name="name_of_city" placeholder="search city" required>
         <input type="submit" id="search-btn" value="Get weather">
     </form>
-    <div id="weather-info">
-        <p>Current Weather: <span id="current-weather"></span></p>
-        <p>Temperature: <span id="temperature"></span></p>
-        <p>Humidity: <span id="humidity"></span></p>
-    </div>
+    <section class="weather-container">
+        <div class="weather-info">
+            <h2 id="city-name"><span></span></h2>
+            <p id="chance-of-rain">Chance of Rain : <span> _ _ </span>%</p>
+            <p id="temperature"><span>_ _ </span>°</p>
+        </div>
+        <div class="weather-logo-now">
+            <span></span>
+        </div>
+    </section>
 
+    <section class="today-forecast">
+        <P>TODAY'S FORECAST</P>
+        <div class="today-forecast-time">
+            <table>
+                <thead>
+                    <tr>
+                        <th><span></span></th>
+                    
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Forecast data will be inserted here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="air-conditions">
+        <div class="air-conditions-info">
+            <h2>AIR CONDITIONS</h2>
+            <p id="real-feel">Real Feel: <span></span>°C</p>
+            <p id="air-chance-of-rain">Chance of Rain: <span></span>%</p>
+            <p id="wind-speed">Wind Speed: <span></span> km/h</p>
+            <p id="pressure">Pressure: <span></span> hPa</p>
+        </div>
+    </section>
+    <section class="seven-day-forecast">
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Weather</th>
+                        <th>Temperature</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 7-day forecast data will be inserted here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </section>
     <script src="app.js"></script>
 </body>
 </html>
