@@ -123,3 +123,30 @@ label {
     color: white;
     text-align: center;
 }
+.weather-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 60%;
+    margin-top: 20px;
+}
+.weather-container .weather-info {
+    width: auto;
+    height: auto;
+    flex: 1;
+}
+.weather-logo-now {
+    font-size: 3rem;
+}
+.seven-day-forecast {
+    background-color: var(--color-dark);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px var(--color-mid);
+    width: 60%;
+    margin-top: 20px;
+}
+.seven-day-forecast th,
+.seven-day-forecast td {
+    color: white;
+}
