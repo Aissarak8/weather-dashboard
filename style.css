@@ -109,3 +109,17 @@ label {
     background-color: var(--color-dark);
     box-shadow: 5px 5px 10px var(--color-mid);
 }
+.today-forecast {
+    background-color: var(--color-dark);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px var(--color-mid);
+    width: 60%;
+    margin-top: 20px;
+}
+.today-forecast p {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+}
