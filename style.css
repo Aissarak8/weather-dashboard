@@ -105,7 +105,6 @@ label {
     margin-top: 20px;
     padding: 10px;
     width: 60%;
-    height: 300px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
