@@ -4,7 +4,6 @@
     --color-mid: #5483B3;
     --color-light: #7DA0CA;
     --color-lightest: #C1E8FF;
-    --text-color: #333;
 }
 * {
     margin: 0;
@@ -61,7 +60,6 @@ label {
     cursor: pointer;
     border: none;
     border-radius: 5px;
-    align-items: center;
 }
 .weather-info {
     margin-top: 20px;
@@ -78,7 +76,6 @@ label {
     height: 50px;
     font-family: fantasy;
     font-size: 1.5rem;
-    color: var(--text-color);
     color: white;
 }
 #chance-of-rain {
