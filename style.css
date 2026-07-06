@@ -52,6 +52,10 @@ label {
     border: 1px solid var(--color-mid);
     box-shadow: 5px 5px 10px var(--color-mid);
 }
+#name_of_city:focus {
+    outline: 2px solid var(--color-darkest);
+    outline-offset: 2px;
+}
 #search-btn {
     width: 100px;
     padding: 10px;
@@ -60,6 +64,9 @@ label {
     cursor: pointer;
     border: none;
     border-radius: 5px;
+}
+#search-btn:hover {
+    background-color: var(--color-dark);
 }
 .weather-info {
     margin-top: 20px;
