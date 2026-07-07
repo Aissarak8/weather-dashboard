@@ -157,3 +157,20 @@ label {
 .seven-day-forecast td {
     color: white;
 }
+
+@media (max-width: 600px) {
+    #name_of_city,
+    .weather-container,
+    .today-forecast,
+    .air-conditions,
+    .seven-day-forecast {
+        width: 90%;
+    }
+    .weather-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .weather-container .weather-info {
+        width: 100%;
+    }
+}
