@@ -112,6 +112,9 @@ label {
     background-color: var(--color-dark);
     box-shadow: 5px 5px 10px var(--color-mid);
 }
+.air-conditions-info {
+    color: white;
+}
 .today-forecast {
     background-color: var(--color-dark);
     padding: 10px;
