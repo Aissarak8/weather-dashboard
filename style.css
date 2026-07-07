@@ -32,6 +32,10 @@ body {
     min-height: 100vh;
 
 }
+.today-forecast-time,
+.seven-day-forecast > div {
+    overflow-x: auto;
+}
 table {
     width: 100%;
     border-collapse: collapse;
