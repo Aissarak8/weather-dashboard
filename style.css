@@ -63,8 +63,8 @@ label {
     outline-offset: 2px;
 }
 #search-btn {
-    width: 100px;
-    padding: 10px;
+    padding: 10px 20px;
+    white-space: nowrap;
     background-color: var(--color-darkest);
     color: var(--color-lightest);
     cursor: pointer;
