@@ -141,6 +141,10 @@ th, td {
     color: white;
     text-align: center;
 }
+.today-forecast th,
+.today-forecast td {
+    color: white;
+}
 .weather-container {
     display: flex;
     justify-content: space-between;
