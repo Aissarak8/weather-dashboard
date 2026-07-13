@@ -157,6 +157,7 @@ th, td {
     width: auto;
     height: auto;
     flex: 1;
+    min-width: 0;
 }
 .weather-logo-now {
     font-size: 3rem;
