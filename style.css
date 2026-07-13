@@ -78,6 +78,10 @@ th, td {
 #search-btn:hover {
     background-color: var(--color-dark);
 }
+#search-btn:focus {
+    outline: 2px solid var(--color-darkest);
+    outline-offset: 2px;
+}
 .weather-info {
     margin-top: 20px;
     padding: 10px;
