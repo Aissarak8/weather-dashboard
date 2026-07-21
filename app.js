@@ -85,6 +85,7 @@ function displayTodayForecast(list) {
     headRow.innerHTML = '';
     body.innerHTML = '';
 
+    const iconRow = document.createElement('tr');
     const tempRow = document.createElement('tr');
 
     todaySlots.forEach(function (slot) {
@@ -94,11 +95,16 @@ function displayTodayForecast(list) {
         timeCell.textContent = time;
         headRow.appendChild(timeCell);
 
+        const iconCell = document.createElement('td');
+        iconCell.textContent = weatherEmojis[slot.weather[0].main] || '🌡️';
+        iconRow.appendChild(iconCell);
+
         const tempCell = document.createElement('td');
         tempCell.textContent = `${Math.round(slot.main.temp)}°`;
         tempRow.appendChild(tempCell);
     });
 
+    body.appendChild(iconRow);
     body.appendChild(tempRow);
 }
 
