@@ -20,26 +20,35 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
 }
-form {
-
-    margin-top: 20px;
-    line-height: 1.5;
-    display: flex;
-    flex-direction: column;
-
-}
-
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1.2rem;
-    margin: 0;
     padding: 20px;
+    margin: 0 auto;
+    max-width: 900px;
     background-color: var(--color-darkest);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas:
+        "search  ."
+        "current week"
+        "today   week"
+        "air     week";
+    gap: 20px;
+    align-content: start;
     min-height: 100vh;
 }
+
+form {
+    grid-area: search;
+    display: flex;
+    align-items: center;
+    background-color: var(--color-dark);
+    border-radius: 30px;
+    padding: 4px;
+    box-shadow: var(--card-shadow);
+}
+
 .today-forecast-time,
 .seven-day-forecast > div {
     overflow-x: auto;
@@ -54,15 +63,12 @@ th, td {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 #name_of_city {
-    width: 60%;
-    height: 50px;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    border: 1px solid var(--color-mid);
-    background-color: var(--color-dark);
+    flex: 1;
+    height: 40px;
+    padding: 0 15px;
+    border: none;
+    background: transparent;
     color: white;
-    box-shadow: var(--card-shadow);
 }
 #name_of_city::placeholder {
     color: var(--color-light);
@@ -72,14 +78,15 @@ th, td {
     outline-offset: 2px;
 }
 #search-btn {
-    padding: 10px 20px;
+    height: 40px;
+    padding: 0 20px;
     white-space: nowrap;
     background-color: var(--color-light);
     color: var(--color-darkest);
     font-weight: bold;
     cursor: pointer;
     border: none;
-    border-radius: 8px;
+    border-radius: 24px;
 }
 #search-btn:hover {
     background-color: var(--color-lightest);
@@ -88,92 +95,97 @@ th, td {
     outline: 2px solid var(--color-lightest);
     outline-offset: 2px;
 }
-.weather-info {
-    margin-top: 20px;
-    padding: 10px;
-    width: 60%;
-    border-radius: var(--card-radius);
-    background-color: var(--color-dark);
-    box-shadow: var(--card-shadow);
-}
 #city-name {
-    margin-top: 20px;
-    margin-left: 30px;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 1.5rem;
     color: white;
 }
 #chance-of-rain {
-    margin-top: 10px;
-    margin-left: 30px;
+    margin-top: 5px;
     padding: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 0.8rem;
-    color: white;
+    color: rgba(255, 255, 255, 0.6);
 }
 #temperature {
     margin-top: 15px;
-    margin-left: 30px;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 3.5rem;
     font-weight: bold;
     color: white;
 }
 .air-conditions {
-    margin-top: 20px;
-    padding: 10px;
-    width: 60%;
+    grid-area: air;
+    position: relative;
+    padding: 20px;
     border-radius: var(--card-radius);
     background-color: var(--color-dark);
     box-shadow: var(--card-shadow);
+}
+.see-more {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background-color: var(--color-light);
+    color: var(--color-darkest);
 }
 .air-conditions-info {
     color: white;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 15px;
 }
 .air-conditions-info h2 {
     grid-column: 1 / -1;
-    text-align: center;
-    margin-bottom: 10px;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    font-weight: normal;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 5px;
 }
-#real-feel::before {
-    content: "🌡️ ";
+.condition-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
-#air-chance-of-rain::before {
-    content: "☔ ";
+.stat-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
 }
-#wind-speed::before {
-    content: "💨 ";
-}
-#pressure::before {
-    content: "🔽 ";
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: bold;
 }
 .today-forecast {
+    grid-area: today;
     background-color: var(--color-dark);
-    padding: 10px;
+    padding: 20px;
     border-radius: var(--card-radius);
     box-shadow: var(--card-shadow);
-    width: 60%;
-    margin-top: 20px;
 }
-.today-forecast p {
+.today-forecast > p {
     margin-bottom: 10px;
-    font-weight: bold;
-    color: white;
-    text-align: center;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: left;
 }
 .today-forecast th,
 .today-forecast td {
     color: white;
 }
 .weather-container {
+    grid-area: current;
+    padding: 20px;
+    border-radius: var(--card-radius);
+    background-color: var(--color-dark);
+    box-shadow: var(--card-shadow);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 60%;
-    margin-top: 20px;
 }
 .weather-container .weather-info {
     width: auto;
@@ -182,32 +194,54 @@ th, td {
     min-width: 0;
 }
 .weather-logo-now {
-    font-size: 3rem;
+    font-size: 4.5rem;
 }
 .seven-day-forecast {
+    grid-area: week;
     background-color: var(--color-dark);
-    padding: 10px;
+    padding: 20px;
     border-radius: var(--card-radius);
     box-shadow: var(--card-shadow);
-    width: 60%;
-    margin-top: 20px;
+}
+.seven-day-forecast > p {
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: left;
 }
 .seven-day-forecast th,
 .seven-day-forecast td {
     color: white;
+    font-size: 0.9rem;
+}
+.seven-day-forecast thead th {
+    font-size: 0.7rem;
+    font-weight: normal;
+    color: rgba(255, 255, 255, 0.5);
+}
+.seven-day-forecast td:first-child,
+.seven-day-forecast th:first-child {
+    text-align: left;
+}
+.seven-day-forecast td:last-child,
+.seven-day-forecast th:last-child {
+    text-align: right;
 }
 
-@media (max-width: 600px) {
-    #name_of_city,
-    .weather-container,
-    .today-forecast,
-    .air-conditions,
-    .seven-day-forecast {
-        width: 90%;
+@media (max-width: 700px) {
+    body {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "search"
+            "current"
+            "today"
+            "air"
+            "week";
     }
     .weather-container {
         flex-direction: column;
-        gap: 10px;
+        gap: 15px;
     }
     .weather-container .weather-info {
         width: 100%;
