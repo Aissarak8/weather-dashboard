@@ -49,7 +49,13 @@ function getWeather(city) {
 
 function parseResponse(response) {
     if (!response.ok) {
-        throw new Error('City not found. Check the spelling and try again.');
+        if (response.status === 401) {
+            throw new Error('Invalid API key (401). New OpenWeatherMap keys can take up to 2 hours to activate.');
+        }
+        if (response.status === 404) {
+            throw new Error('City not found (404). Check the spelling and try again.');
+        }
+        throw new Error(`Request failed with status ${response.status}.`);
     }
     return response.json();
 }
