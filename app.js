@@ -1,58 +1,56 @@
+import {
+  formatLocalDate,
+  getDateKey,
+  groupForecastByDay,
+  roundTemperature,
+} from "./weather-utils.js";
+
 const form = document.getElementById("weather-form");
 const cityInput = document.getElementById("name_of_city");
+const searchButton = document.getElementById("search-btn");
+const dashboard = document.getElementById("weather-content");
+const statusMessage = document.getElementById("status-message");
+const unitButtons = [...document.querySelectorAll(".unit-button")];
 
-const weatherEmojis = {
-  Clear: "☀️",
-  Clouds: "☁️",
-  Rain: "🌧️",
-  Drizzle: "🌦️",
-  Thunderstorm: "⛈️",
-  Snow: "❄️",
-  Mist: "🌫️",
-  Fog: "🌫️",
-  Haze: "🌫️",
+let unit = getStoredValue("weather-unit") || "c";
+let weatherState = null;
+let activeRequest = null;
+
+const metricIcons = {
+  humidity:
+    '<svg viewBox="0 0 24 24"><path d="M12 3s6 6.2 6 11a6 6 0 0 1-12 0c0-4.8 6-11 6-11Z"></path><path d="M9 15.5a3.2 3.2 0 0 0 3 1.8"></path></svg>',
+  wind: '<svg viewBox="0 0 24 24"><path d="M3 8h11a3 3 0 1 0-3-3"></path><path d="M3 12h16a2.5 2.5 0 1 1-2.5 2.5"></path><path d="M3 16h7"></path></svg>',
+  pressure:
+    '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="m12 12 3.5-3.5"></path><path d="M8 17h8"></path></svg>',
+  visibility:
+    '<svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-5 9.5-5 9.5 5 9.5 5-3.5 5-9.5 5-9.5-5-9.5-5Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>',
+  clouds:
+    '<svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .7-7.9A6 6 0 0 0 6.2 9.2 4.5 4.5 0 0 0 7 18Z"></path></svg>',
+  feels:
+    '<svg viewBox="0 0 24 24"><path d="M9 14.8V5a3 3 0 0 1 6 0v9.8a5 5 0 1 1-6 0Z"></path><path d="M12 7v9"></path></svg>',
 };
 
-form.addEventListener("submit", function (event) {
+form.addEventListener("submit", (event) => {
   event.preventDefault();
-
   const city = cityInput.value.trim();
-  if (!city) {
-    return;
-  }
-
-  getWeather(city);
+  if (city) loadWeather(city);
 });
 
-function getWeather(city) {
-  const currentUrl = getApiUrl("weather", city);
-  const forecastUrl = getApiUrl("forecast", city);
-
-  Promise.all([
-    fetch(currentUrl).then(parseResponse),
-    fetch(forecastUrl).then(parseResponse),
-  ])
-    .then(function (results) {
-      const current = results[0];
-      const forecast = results[1];
-
-      displayCurrentWeather(current);
-      displayAirConditions(current, forecast.list[0]);
-      displayTodayForecast(forecast.list);
-      displaySevenDayForecast(forecast.list);
-    })
-    .catch(function (error) {
-      alert(error.message);
-    });
-}
+unitButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    unit = button.dataset.unit;
+    setStoredValue("weather-unit", unit);
+    updateUnitButtons();
+    if (weatherState)
+      renderWeather(weatherState.current, weatherState.forecast);
+  });
+});
 
 function getApiUrl(endpoint, city) {
   const proxyBaseUrl = window.WEATHER_CONFIG?.apiBaseUrl?.replace(/\/$/, "");
   if (proxyBaseUrl) {
     return `${proxyBaseUrl}/${endpoint}?city=${encodeURIComponent(city)}`;
   }
-
-  // Local-only fallback for the ignored config.js used during development.
   if (
     typeof API_KEY !== "undefined" &&
     API_KEY &&
@@ -61,121 +59,262 @@ function getApiUrl(endpoint, city) {
     const params = `q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`;
     return `https://api.openweathermap.org/data/2.5/${endpoint}?${params}`;
   }
-
   throw new Error("Weather API is not configured.");
 }
 
-function parseResponse(response) {
-  if (!response.ok) {
-    if (response.status === 401) {
-      throw new Error(
-        "Invalid API key (401). New OpenWeatherMap keys can take up to 2 hours to activate.",
-      );
-    }
-    if (response.status === 404) {
-      throw new Error(
-        "City not found (404). Check the spelling and try again.",
-      );
-    }
-    throw new Error(`Request failed with status ${response.status}.`);
+async function loadWeather(city) {
+  activeRequest?.abort();
+  activeRequest = new AbortController();
+  setLoading(true, `Loading weather for ${city}…`);
+  try {
+    const responses = await Promise.all([
+      fetch(getApiUrl("weather", city), { signal: activeRequest.signal }),
+      fetch(getApiUrl("forecast", city), { signal: activeRequest.signal }),
+    ]);
+    const [current, forecast] = await Promise.all(responses.map(parseResponse));
+    weatherState = { current, forecast };
+    cityInput.value = "";
+    setStoredValue("weather-city", current.name);
+    renderWeather(current, forecast);
+    showStatus(`Weather updated for ${current.name}.`, false, 1800);
+  } catch (error) {
+    if (error.name !== "AbortError") showStatus(error.message, true);
+  } finally {
+    setLoading(false);
   }
-  return response.json();
 }
 
-function displayCurrentWeather(data) {
-  document.querySelector("#city-name span").textContent =
-    `${data.name}, ${data.sys.country}`;
-  document.querySelector("#temperature span").textContent = Math.round(
-    data.main.temp,
+async function parseResponse(response) {
+  if (response.ok) return response.json();
+  let message = "Weather service is temporarily unavailable.";
+  try {
+    const data = await response.json();
+    if (typeof data.message === "string") message = data.message;
+    if (typeof data.error === "string") message = data.error;
+  } catch {
+    // Keep the friendly fallback when the response is not JSON.
+  }
+  if (response.status === 404) {
+    message = "City not found. Check the spelling and try again.";
+  }
+  if (response.status === 429) {
+    message = "Too many searches. Please wait a minute and try again.";
+  }
+  throw new Error(message);
+}
+
+function renderWeather(current, forecast) {
+  const timezone = forecast.city?.timezone ?? current.timezone ?? 0;
+  const days = groupForecastByDay(forecast.list, timezone);
+  const todayKey = getDateKey(current.dt, timezone);
+  const today = days.find((day) => day.key === todayKey);
+  const condition = current.weather[0];
+
+  text("current-location", `${current.name}, ${current.sys.country}`);
+  text("weather-description", condition.description);
+  document.getElementById("current-temperature").innerHTML =
+    `${temperature(current.main.temp)}<span>°</span>`;
+  text("hero-feels-like", `${temperature(current.main.feels_like)}°`);
+  text("today-high", `${temperature(today?.max ?? current.main.temp_max)}°`);
+  text("today-low", `${temperature(today?.min ?? current.main.temp_min)}°`);
+  text(
+    "local-time",
+    formatLocalDate(current.dt, timezone, {
+      weekday: "long",
+      hour: "numeric",
+      minute: "2-digit",
+    }),
+  );
+  text(
+    "rain-summary",
+    `Precipitation ${Math.round((forecast.list[0]?.pop || 0) * 100)}%`,
+  );
+  text(
+    "updated-time",
+    `Updated ${formatLocalDate(current.dt, timezone, { hour: "numeric", minute: "2-digit" })}`,
   );
 
-  const condition = data.weather[0];
-  const icon = document.querySelector(".weather-logo-now span");
-  icon.textContent = weatherEmojis[condition.main] || "🌡️";
-  icon.setAttribute("aria-label", condition.description);
+  const icon = document.getElementById("current-weather-icon");
+  icon.src = iconUrl(condition.icon, "4x");
+  icon.alt = condition.description;
+  renderHourly(forecast.list.slice(0, 8), timezone);
+  renderConditions(current);
+  renderOutlook(days, timezone);
+  dashboard.setAttribute("aria-busy", "false");
 }
 
-function displayAirConditions(current, nextForecastSlot) {
-  document.querySelector("#real-feel span").textContent = Math.round(
-    current.main.feels_like,
-  );
-  document.querySelector("#wind-speed span").textContent = Math.round(
-    current.wind.speed * 3.6,
-  );
-  document.querySelector("#pressure span").textContent = current.main.pressure;
+function renderHourly(slots, timezone) {
+  const values = slots.map((slot) => roundTemperature(slot.main.temp, unit));
+  const width = 620;
+  const height = 150;
+  const padding = { x: 28, top: 28, bottom: 32 };
+  const min = Math.min(...values) - 1;
+  const max = Math.max(...values) + 1;
+  const range = Math.max(max - min, 1);
+  const points = values.map((value, index) => ({
+    x: padding.x + (index * (width - padding.x * 2)) / (values.length - 1),
+    y:
+      padding.top +
+      ((max - value) / range) * (height - padding.top - padding.bottom),
+    value,
+  }));
+  const line = points.map((point) => `${point.x},${point.y}`).join(" ");
+  const area = `${points[0].x},${height - padding.bottom} ${line} ${points.at(-1).x},${height - padding.bottom}`;
+  const labels = points
+    .map(
+      (point, index) =>
+        `<text class="chart-temp" x="${point.x}" y="${point.y - 12}" text-anchor="middle">${point.value}°</text><circle class="chart-dot" cx="${point.x}" cy="${point.y}" r="4"></circle><text class="chart-label" x="${point.x}" y="${height - 6}" text-anchor="middle">${formatLocalDate(slots[index].dt, timezone, { hour: "numeric" })}</text>`,
+    )
+    .join("");
+  const description = values
+    .map(
+      (value, index) =>
+        `${formatLocalDate(slots[index].dt, timezone, { hour: "numeric" })}: ${value} degrees`,
+    )
+    .join(", ");
 
-  const chanceOfRain = Math.round((nextForecastSlot.pop || 0) * 100);
-  document.querySelector("#chance-of-rain span").textContent = chanceOfRain;
-  document.querySelector("#air-chance-of-rain span").textContent = chanceOfRain;
+  document.getElementById("hourly-chart").innerHTML =
+    `<svg viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="chart-title chart-description"><title id="chart-title">Temperature for the next 24 hours</title><desc id="chart-description">${description}</desc><defs><linearGradient id="temperature-gradient"><stop stop-color="#67d9ed"/><stop offset="1" stop-color="#6f8cff"/></linearGradient><linearGradient id="area-gradient" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#67d9ed" stop-opacity=".22"/><stop offset="1" stop-color="#67d9ed" stop-opacity="0"/></linearGradient></defs><line class="chart-grid" x1="${padding.x}" y1="${height - padding.bottom}" x2="${width - padding.x}" y2="${height - padding.bottom}"></line><polygon class="chart-area" points="${area}"></polygon><polyline class="chart-line" points="${line}"></polyline>${labels}</svg>`;
+  text("hourly-summary", `${Math.min(...values)}° — ${Math.max(...values)}°`);
+  document
+    .getElementById("hourly-details")
+    .replaceChildren(...slots.map((slot) => createHourlyItem(slot, timezone)));
 }
 
-function displayTodayForecast(list) {
-  const today = list[0].dt_txt.split(" ")[0];
-  const todaySlots = list.filter(function (slot) {
-    return slot.dt_txt.startsWith(today);
-  });
-
-  const headRow = document.querySelector(".today-forecast-time thead tr");
-  const body = document.querySelector(".today-forecast-time tbody");
-  headRow.innerHTML = "";
-  body.innerHTML = "";
-
-  const iconRow = document.createElement("tr");
-  const tempRow = document.createElement("tr");
-
-  todaySlots.forEach(function (slot) {
-    const time = slot.dt_txt.split(" ")[1].slice(0, 5);
-
-    const timeCell = document.createElement("th");
-    timeCell.textContent = time;
-    headRow.appendChild(timeCell);
-
-    const iconCell = document.createElement("td");
-    iconCell.textContent = weatherEmojis[slot.weather[0].main] || "🌡️";
-    iconRow.appendChild(iconCell);
-
-    const tempCell = document.createElement("td");
-    tempCell.textContent = `${Math.round(slot.main.temp)}°`;
-    tempRow.appendChild(tempCell);
-  });
-
-  body.appendChild(iconRow);
-  body.appendChild(tempRow);
+function createHourlyItem(slot, timezone) {
+  const item = document.createElement("div");
+  item.className = "hourly-item";
+  const time = document.createElement("span");
+  time.textContent = formatLocalDate(slot.dt, timezone, { hour: "numeric" });
+  const image = document.createElement("img");
+  image.src = iconUrl(slot.weather[0].icon);
+  image.alt = slot.weather[0].description;
+  image.loading = "lazy";
+  const rain = document.createElement("strong");
+  rain.textContent = `${Math.round((slot.pop || 0) * 100)}%`;
+  item.append(time, image, rain);
+  return item;
 }
 
-function displaySevenDayForecast(list) {
-  const days = {};
-  list.forEach(function (slot) {
-    const date = slot.dt_txt.split(" ")[0];
-    if (!days[date]) {
-      days[date] = slot;
-    }
-  });
+function renderConditions(current) {
+  const metrics = [
+    ["humidity", "Humidity", current.main.humidity, "%"],
+    [
+      "wind",
+      "Wind",
+      current.wind?.speed,
+      "km/h",
+      (value) => Math.round(value * 3.6),
+    ],
+    ["pressure", "Pressure", current.main.pressure, "hPa"],
+    [
+      "visibility",
+      "Visibility",
+      current.visibility,
+      "km",
+      (value) => (value / 1000).toFixed(1),
+    ],
+    ["clouds", "Cloud cover", current.clouds?.all, "%"],
+    ["feels", "Feels like", current.main.feels_like, "°", temperature],
+  ].filter((metric) => Number.isFinite(metric[2]));
+  document.getElementById("conditions-grid").innerHTML = metrics
+    .map(
+      ([key, label, value, suffix, transform]) =>
+        `<div class="condition-card"><span class="condition-icon" aria-hidden="true">${metricIcons[key]}</span><dt>${label}</dt><dd>${transform ? transform(value) : Math.round(value)}${suffix}</dd></div>`,
+    )
+    .join("");
+}
 
-  const body = document.querySelector(".seven-day-forecast tbody");
-  body.innerHTML = "";
-
-  Object.keys(days).forEach(function (date) {
-    const slot = days[date];
-    const dayName = new Date(date).toLocaleDateString("en-US", {
-      weekday: "short",
+function renderOutlook(days, timezone) {
+  document
+    .getElementById("forecast-list")
+    .replaceChildren(
+      ...days.map((day, index) => createForecastRow(day, timezone, index)),
+    );
+  if (days.length) {
+    const first = formatLocalDate(days[0].representative.dt, timezone, {
+      month: "short",
+      day: "numeric",
     });
+    const last = formatLocalDate(days.at(-1).representative.dt, timezone, {
+      month: "short",
+      day: "numeric",
+    });
+    text("forecast-range", `${first} – ${last}`);
+  }
+}
 
-    const row = document.createElement("tr");
+function createForecastRow(day, timezone, index) {
+  const slot = day.representative;
+  const row = document.createElement("article");
+  row.className = "forecast-row";
+  const dayName =
+    index === 0
+      ? "Today"
+      : formatLocalDate(slot.dt, timezone, { weekday: "short" });
+  const date = formatLocalDate(slot.dt, timezone, {
+    month: "short",
+    day: "numeric",
+  });
+  row.innerHTML = `<div class="forecast-day"><strong>${dayName}</strong><span>${date}</span></div><img class="forecast-icon" src="${iconUrl(slot.weather[0].icon)}" alt="${slot.weather[0].description}" loading="lazy"><span class="forecast-condition">${slot.weather[0].description}</span><span class="forecast-temperature">${temperature(day.max)}° <span>/ ${temperature(day.min)}°</span></span>`;
+  return row;
+}
 
-    const dayCell = document.createElement("td");
-    dayCell.textContent = dayName;
+function setLoading(loading, message = "") {
+  searchButton.disabled = loading;
+  searchButton.classList.toggle("is-loading", loading);
+  dashboard.setAttribute("aria-busy", String(loading));
+  if (loading) showStatus(message);
+}
 
-    const weatherCell = document.createElement("td");
-    weatherCell.textContent =
-      weatherEmojis[slot.weather[0].main] || slot.weather[0].main;
+function showStatus(message, isError = false, timeout = 0) {
+  statusMessage.textContent = message;
+  statusMessage.classList.toggle("is-error", isError);
+  statusMessage.classList.add("is-visible");
+  window.clearTimeout(showStatus.timer);
+  if (timeout) {
+    showStatus.timer = window.setTimeout(
+      () => statusMessage.classList.remove("is-visible"),
+      timeout,
+    );
+  }
+}
 
-    const tempCell = document.createElement("td");
-    tempCell.textContent = `${Math.round(slot.main.temp)}°`;
+function text(id, value) {
+  document.getElementById(id).textContent = value;
+}
 
-    row.appendChild(dayCell);
-    row.appendChild(weatherCell);
-    row.appendChild(tempCell);
-    body.appendChild(row);
+function temperature(value) {
+  return roundTemperature(value, unit);
+}
+
+function iconUrl(code, size = "2x") {
+  return `https://openweathermap.org/img/wn/${code}@${size}.png`;
+}
+
+function updateUnitButtons() {
+  unitButtons.forEach((button) => {
+    const active = button.dataset.unit === unit;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
   });
 }
+
+function getStoredValue(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function setStoredValue(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Storage can be unavailable in privacy modes.
+  }
+}
+
+updateUnitButtons();
+loadWeather(getStoredValue("weather-city") || "Marrakesh");
