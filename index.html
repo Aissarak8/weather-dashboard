@@ -1,88 +1,102 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A weather dashboard built with plain HTML, CSS, and vanilla JavaScript using the OpenWeatherMap API.">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%98%80%EF%B8%8F</text></svg>">
-    <link rel="stylesheet" href="style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A weather dashboard built with plain HTML, CSS, and vanilla JavaScript using the OpenWeatherMap API."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%98%80%EF%B8%8F</text></svg>"
+    />
+    <link rel="stylesheet" href="style.css" />
     <title>Weather Dashboard</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1 class="visually-hidden">Weather Dashboard</h1>
-    <noscript>This app requires JavaScript to fetch and display weather data.</noscript>
+    <noscript
+      >This app requires JavaScript to fetch and display weather data.</noscript
+    >
     <form id="weather-form">
-        <input type="text" id="name_of_city" name="name_of_city" placeholder="search city" aria-label="City name" required>
-        <input type="submit" id="search-btn" value="Get weather">
+      <input
+        type="text"
+        id="name_of_city"
+        name="name_of_city"
+        placeholder="search city"
+        aria-label="City name"
+        required
+      />
+      <input type="submit" id="search-btn" value="Get weather" />
     </form>
     <section class="weather-container">
-        <div class="weather-info">
-            <h2 id="city-name"><span>Search for a city</span></h2>
-            <p id="chance-of-rain">Chance of Rain : <span></span>%</p>
-            <p id="temperature"><span></span>°</p>
-        </div>
-        <div class="weather-logo-now">
-            <span>☀️</span>
-        </div>
+      <div class="weather-info">
+        <h2 id="city-name"><span>Search for a city</span></h2>
+        <p id="chance-of-rain">Chance of Rain : <span></span>%</p>
+        <p id="temperature"><span></span>°</p>
+      </div>
+      <div class="weather-logo-now">
+        <span>☀️</span>
+      </div>
     </section>
 
     <section class="today-forecast">
-        <p>TODAY'S FORECAST</p>
-        <div class="today-forecast-time">
-            <table>
-                <thead>
-                    <tr>
-                        <th><span></span></th>
-                    
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Forecast data will be inserted here dynamically -->
-                </tbody>
-            </table>
-        </div>
+      <p>TODAY'S FORECAST</p>
+      <div class="today-forecast-time">
+        <table>
+          <thead>
+            <tr>
+              <th><span></span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Forecast data will be inserted here dynamically -->
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <section class="air-conditions">
-        <span class="see-more">See more</span>
-        <div class="air-conditions-info">
-            <h2>AIR CONDITIONS</h2>
-            <div class="condition-stat" id="real-feel">
-                <p class="stat-label">🌡️ Real Feel</p>
-                <p class="stat-value"><span></span>°</p>
-            </div>
-            <div class="condition-stat" id="air-chance-of-rain">
-                <p class="stat-label">☔ Chance of rain</p>
-                <p class="stat-value"><span></span>%</p>
-            </div>
-            <div class="condition-stat" id="wind-speed">
-                <p class="stat-label">💨 Wind</p>
-                <p class="stat-value"><span></span> km/h</p>
-            </div>
-            <div class="condition-stat" id="pressure">
-                <p class="stat-label">🔽 Pressure</p>
-                <p class="stat-value"><span></span> hPa</p>
-            </div>
+      <span class="see-more">See more</span>
+      <div class="air-conditions-info">
+        <h2>AIR CONDITIONS</h2>
+        <div class="condition-stat" id="real-feel">
+          <p class="stat-label">🌡️ Real Feel</p>
+          <p class="stat-value"><span></span>°</p>
         </div>
+        <div class="condition-stat" id="air-chance-of-rain">
+          <p class="stat-label">☔ Chance of rain</p>
+          <p class="stat-value"><span></span>%</p>
+        </div>
+        <div class="condition-stat" id="wind-speed">
+          <p class="stat-label">💨 Wind</p>
+          <p class="stat-value"><span></span> km/h</p>
+        </div>
+        <div class="condition-stat" id="pressure">
+          <p class="stat-label">🔽 Pressure</p>
+          <p class="stat-value"><span></span> hPa</p>
+        </div>
+      </div>
     </section>
     <section class="seven-day-forecast">
-        <p>7-DAY FORECAST</p>
-        <div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Day</th>
-                        <th>Weather</th>
-                        <th>Temperature</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 7-day forecast data will be inserted here dynamically -->
-                </tbody>
-            </table>
-        </div>
+      <p>7-DAY FORECAST</p>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Weather</th>
+              <th>Temperature</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 7-day forecast data will be inserted here dynamically -->
+          </tbody>
+        </table>
+      </div>
     </section>
     <script src="config.js"></script>
     <script src="app.js"></script>
-</body>
+  </body>
 </html>

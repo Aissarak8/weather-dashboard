@@ -1,0 +1,23 @@
+{
+  "name": "weather-dashboard",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "test": "node --test",
+    "build": "node scripts/build.mjs",
+    "worker:check": "wrangler deploy --dry-run --outdir .wrangler/dry-run",
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.13.0",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "wrangler": "^4.154.0"
+  }
+}
