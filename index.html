@@ -3,100 +3,156 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07111f" />
     <meta
       name="description"
-      content="A weather dashboard built with plain HTML, CSS, and vanilla JavaScript using the OpenWeatherMap API."
+      content="A fast, accessible weather dashboard with current conditions and a real five-day forecast."
     />
     <link
       rel="icon"
-      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%98%80%EF%B8%8F</text></svg>"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☀️</text></svg>"
     />
+    <link rel="preconnect" href="https://openweathermap.org" />
     <link rel="stylesheet" href="style.css" />
-    <title>Weather Dashboard</title>
+    <title>Atmos — Weather, clearly</title>
   </head>
   <body>
-    <h1 class="visually-hidden">Weather Dashboard</h1>
+    <a class="skip-link" href="#weather-content">Skip to weather</a>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Atmos weather home">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span><strong>Atmos</strong><small>Weather, clearly</small></span>
+      </a>
+      <form id="weather-form" class="search-form" role="search">
+        <label class="visually-hidden" for="name_of_city">Search city</label>
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-4-4"></path>
+        </svg>
+        <input
+          type="search"
+          id="name_of_city"
+          name="name_of_city"
+          placeholder="Search a city…"
+          autocomplete="off"
+          spellcheck="false"
+          required
+        />
+        <button id="search-btn" type="submit">
+          <span class="button-label">Search</span
+          ><span class="button-loader" aria-hidden="true"></span>
+        </button>
+      </form>
+      <div class="unit-switcher" role="group" aria-label="Temperature unit">
+        <button
+          type="button"
+          class="unit-button is-active"
+          data-unit="c"
+          aria-pressed="true"
+        >
+          °C
+        </button>
+        <button
+          type="button"
+          class="unit-button"
+          data-unit="f"
+          aria-pressed="false"
+        >
+          °F
+        </button>
+      </div>
+    </header>
+
+    <main id="weather-content" class="dashboard" aria-busy="true">
+      <div
+        id="status-message"
+        class="status-message"
+        role="status"
+        aria-live="polite"
+      >
+        Loading current conditions…
+      </div>
+
+      <section class="hero panel" aria-labelledby="current-location">
+        <div class="hero-copy">
+          <p class="eyebrow" id="local-time">Current weather</p>
+          <h1 id="current-location">Marrakesh</h1>
+          <p id="weather-description" class="weather-description">
+            Loading conditions…
+          </p>
+          <div class="temperature-row">
+            <p id="current-temperature" class="current-temperature">
+              --<span>°</span>
+            </p>
+            <div class="temperature-context">
+              <p>Feels like <strong id="hero-feels-like">--°</strong></p>
+              <p>
+                H: <strong id="today-high">--°</strong>
+                <span aria-hidden="true">·</span> L:
+                <strong id="today-low">--°</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="weather-orbit" aria-hidden="true"></div>
+          <img id="current-weather-icon" alt="" width="200" height="200" />
+        </div>
+        <div class="hero-footer">
+          <span id="rain-summary">Precipitation 0%</span
+          ><span id="updated-time">Updating…</span>
+        </div>
+      </section>
+
+      <section class="hourly panel" aria-labelledby="hourly-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Next 24 hours</p>
+            <h2 id="hourly-title">Temperature trend</h2>
+          </div>
+          <p id="hourly-summary" class="section-meta">3-hour intervals</p>
+        </div>
+        <div id="hourly-chart" class="chart-wrap"></div>
+        <div
+          id="hourly-details"
+          class="hourly-details"
+          aria-label="Hourly forecast data"
+        ></div>
+      </section>
+
+      <section class="conditions panel" aria-labelledby="conditions-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Right now</p>
+            <h2 id="conditions-title">Conditions</h2>
+          </div>
+        </div>
+        <dl id="conditions-grid" class="conditions-grid"></dl>
+      </section>
+
+      <section class="outlook panel" aria-labelledby="outlook-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">5-day · 3-hour data</p>
+            <h2 id="outlook-title">Forecast outlook</h2>
+          </div>
+          <p id="forecast-range" class="section-meta"></p>
+        </div>
+        <div id="forecast-list" class="forecast-list"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Live weather via OpenWeatherMap</span
+      ><span>Built for clarity, not clutter</span>
+    </footer>
     <noscript
       >This app requires JavaScript to fetch and display weather data.</noscript
     >
-    <form id="weather-form">
-      <input
-        type="text"
-        id="name_of_city"
-        name="name_of_city"
-        placeholder="search city"
-        aria-label="City name"
-        required
-      />
-      <input type="submit" id="search-btn" value="Get weather" />
-    </form>
-    <section class="weather-container">
-      <div class="weather-info">
-        <h2 id="city-name"><span>Search for a city</span></h2>
-        <p id="chance-of-rain">Chance of Rain : <span></span>%</p>
-        <p id="temperature"><span></span>°</p>
-      </div>
-      <div class="weather-logo-now">
-        <span>☀️</span>
-      </div>
-    </section>
-
-    <section class="today-forecast">
-      <p>TODAY'S FORECAST</p>
-      <div class="today-forecast-time">
-        <table>
-          <thead>
-            <tr>
-              <th><span></span></th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Forecast data will be inserted here dynamically -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="air-conditions">
-      <span class="see-more">See more</span>
-      <div class="air-conditions-info">
-        <h2>AIR CONDITIONS</h2>
-        <div class="condition-stat" id="real-feel">
-          <p class="stat-label">🌡️ Real Feel</p>
-          <p class="stat-value"><span></span>°</p>
-        </div>
-        <div class="condition-stat" id="air-chance-of-rain">
-          <p class="stat-label">☔ Chance of rain</p>
-          <p class="stat-value"><span></span>%</p>
-        </div>
-        <div class="condition-stat" id="wind-speed">
-          <p class="stat-label">💨 Wind</p>
-          <p class="stat-value"><span></span> km/h</p>
-        </div>
-        <div class="condition-stat" id="pressure">
-          <p class="stat-label">🔽 Pressure</p>
-          <p class="stat-value"><span></span> hPa</p>
-        </div>
-      </div>
-    </section>
-    <section class="seven-day-forecast">
-      <p>7-DAY FORECAST</p>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>Day</th>
-              <th>Weather</th>
-              <th>Temperature</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- 7-day forecast data will be inserted here dynamically -->
-          </tbody>
-        </table>
-      </div>
-    </section>
     <script src="config.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
   </body>
 </html>

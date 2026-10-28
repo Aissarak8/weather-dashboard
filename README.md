@@ -5,9 +5,11 @@ A weather dashboard built with plain HTML, CSS, and vanilla JavaScript, using th
 ## Features
 
 - Search current weather by city name
-- Today's hourly forecast
-- Air conditions (real feel, wind speed, pressure, chance of rain)
-- 7-day forecast
+- Responsive 24-hour temperature chart using real three-hour forecast points
+- Celsius/Fahrenheit display toggle
+- Current conditions including humidity, wind, pressure, visibility, cloud cover, and feels-like temperature
+- Daily high/low outlook derived from OpenWeatherMap's five-day/three-hour forecast
+- Accessible loading, error, keyboard, and reduced-motion states
 
 ## Tech Stack
 
@@ -36,8 +38,8 @@ The repository includes a Cloudflare Worker proxy in `worker/`. The Worker keeps
 5. Enable GitHub Pages with **GitHub Actions** as its source.
 6. Run the manual **Deploy Weather Dashboard** workflow.
 
-The workflow is manual so merging code does not deploy automatically. The Worker restricts browser CORS to `https://aissarak8.github.io` and caches successful upstream responses for five minutes. For stronger abuse protection, configure a Cloudflare rate-limiting rule for the Worker route before sharing it broadly.
+The workflow is manual so merging code does not deploy automatically. The Worker restricts browser CORS to `https://aissarak8.github.io`, caches successful upstream responses for five minutes, and applies a Cloudflare rate-limit binding per endpoint and client address.
 
 ## Status
 
-Functional - search, current weather, today's hourly forecast, air conditions, and 7-day forecast all work end to end. This is a learning/portfolio project.
+Functional — search, current weather, 24-hour chart, conditions, and the five-day forecast outlook work end to end.
