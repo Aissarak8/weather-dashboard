@@ -1,0 +1,6 @@
+name = "aissarak8-weather-api"
+main = "worker/src/index.js"
+compatibility_date = "2026-10-28"
+
+[vars]
+ALLOWED_ORIGIN = "https://aissarak8.github.io"
