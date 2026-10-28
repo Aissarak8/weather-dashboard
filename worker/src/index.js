@@ -40,6 +40,27 @@ export default {
       return json({ error: "Enter a valid city name." }, 400, corsHeaders);
     }
 
+    if (!env.WEATHER_RATE_LIMITER) {
+      return json(
+        { error: "Weather service protection is not configured." },
+        503,
+        corsHeaders,
+      );
+    }
+
+    const clientAddress = request.headers.get("CF-Connecting-IP") || "unknown";
+    const rateLimit = await env.WEATHER_RATE_LIMITER.limit({
+      key: `${endpoint}:${clientAddress}`,
+    });
+    if (!rateLimit.success) {
+      return json(
+        { error: "Too many requests. Try again in a minute." },
+        429,
+        corsHeaders,
+        { "Retry-After": "60" },
+      );
+    }
+
     if (!env.OPENWEATHERMAP_API_KEY) {
       return json(
         { error: "Weather service is not configured." },
@@ -90,11 +111,12 @@ function withCors(response, corsHeaders) {
   return new Response(response.body, { status: response.status, headers });
 }
 
-function json(data, status, corsHeaders) {
+function json(data, status, corsHeaders, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       ...corsHeaders,
+      ...extraHeaders,
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store",
     },

@@ -4,3 +4,11 @@ compatibility_date = "2026-10-28"
 
 [vars]
 ALLOWED_ORIGIN = "https://aissarak8.github.io"
+
+[[ratelimits]]
+name = "WEATHER_RATE_LIMITER"
+namespace_id = "1001"
+
+[ratelimits.simple]
+limit = 30
+period = 60
