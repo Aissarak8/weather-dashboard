@@ -387,8 +387,10 @@ button {
 }
 .hero-copy {
   position: relative;
+  top: 50%;
   z-index: 2;
   width: min(66%, 420px);
+  transform: translateY(-58%);
 }
 .eyebrow {
   margin: 0 0 8px;
@@ -455,13 +457,14 @@ h1 {
 }
 .hero-visual {
   position: absolute;
-  top: 35px;
+  top: 50%;
   right: 28px;
   z-index: 1;
   display: grid;
   width: 220px;
   height: 220px;
   place-items: center;
+  transform: translateY(-58%);
 }
 .hero-visual img {
   position: relative;
@@ -804,13 +807,16 @@ h1 {
     padding: 28px 25px 24px;
   }
   .hero-copy {
+    top: auto;
     width: 100%;
+    transform: none;
   }
   .hero-visual {
     top: 155px;
     right: 13px;
     width: 160px;
     height: 160px;
+    transform: none;
   }
   .hero-visual img {
     width: 145px;

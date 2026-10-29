@@ -103,7 +103,14 @@
         </div>
         <div class="hero-visual">
           <div class="weather-orbit" aria-hidden="true"></div>
-          <img id="current-weather-icon" alt="" width="200" height="200" />
+          <img
+            id="current-weather-icon"
+            alt=""
+            width="200"
+            height="200"
+            decoding="async"
+            fetchpriority="high"
+          />
         </div>
         <div class="hero-footer">
           <span id="rain-summary">Precipitation 0%</span
@@ -140,7 +147,7 @@
       <section class="outlook panel" aria-labelledby="outlook-title">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">5-day · 3-hour data</p>
+            <p class="eyebrow">Next 5 days · 3-hour data</p>
             <h2 id="outlook-title">Forecast outlook</h2>
           </div>
           <p id="forecast-range" class="section-meta"></p>

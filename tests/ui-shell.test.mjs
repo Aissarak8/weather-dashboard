@@ -37,3 +37,11 @@ test("responsive UX includes loading skeletons and motion preferences", async ()
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /body\[data-phase="night"\]/);
 });
+
+test("production markup prioritizes the hero image and labels the real forecast horizon", async () => {
+  const html = await readFile("index.html", "utf8");
+
+  assert.match(html, /fetchpriority="high"/);
+  assert.match(html, /Next 5 days · 3-hour data/);
+  assert.doesNotMatch(html, /7-day forecast/i);
+});
