@@ -12,6 +12,7 @@ await Promise.all([
   cp("index.html", "dist/index.html"),
   cp("style.css", "dist/style.css"),
   cp("app.js", "dist/app.js"),
+  cp("weather-utils.js", "dist/weather-utils.js"),
 ]);
 
 const config = `window.WEATHER_CONFIG = ${JSON.stringify({ apiBaseUrl }, null, 2)};\n`;
