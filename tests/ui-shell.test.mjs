@@ -18,3 +18,10 @@ test("design system defines atmospheric tokens and responsive breakpoints", asyn
   assert.match(css, /--radius:/);
   assert.match(css, /@media \(max-width: 680px\)/);
 });
+
+test("forecast chart styling includes keyboard-visible data point states", async () => {
+  const css = await readFile("style.css", "utf8");
+
+  assert.match(css, /\.chart-point:focus/);
+  assert.match(css, /\.chart-hit-area/);
+});

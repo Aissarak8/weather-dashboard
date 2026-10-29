@@ -520,6 +520,30 @@ h1 {
   stroke: var(--cyan);
   stroke-width: 2;
 }
+.chart-hit-area {
+  fill: transparent;
+}
+.chart-point {
+  cursor: default;
+  outline: none;
+}
+.chart-point .chart-dot,
+.chart-point .chart-temp {
+  transition: transform var(--ease);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.chart-point:hover .chart-dot,
+.chart-point:focus .chart-dot {
+  fill: var(--cyan);
+  stroke: #dffbff;
+  transform: scale(1.5);
+}
+.chart-point:hover .chart-temp,
+.chart-point:focus .chart-temp {
+  fill: var(--cyan);
+  transform: translateY(-2px);
+}
 .chart-label {
   fill: var(--muted);
   font:
