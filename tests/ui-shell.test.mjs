@@ -25,3 +25,15 @@ test("forecast chart styling includes keyboard-visible data point states", async
   assert.match(css, /\.chart-point:focus/);
   assert.match(css, /\.chart-hit-area/);
 });
+
+test("responsive UX includes loading skeletons and motion preferences", async () => {
+  const [html, css] = await Promise.all([
+    readFile("index.html", "utf8"),
+    readFile("style.css", "utf8"),
+  ]);
+
+  assert.match(html, /aria-describedby="search-hint"/);
+  assert.match(css, /\.dashboard\.is-loading/);
+  assert.match(css, /prefers-reduced-motion/);
+  assert.match(css, /body\[data-phase="night"\]/);
+});

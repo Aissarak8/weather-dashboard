@@ -39,8 +39,12 @@
           placeholder="Search a city…"
           autocomplete="off"
           spellcheck="false"
+          aria-describedby="search-hint"
           required
         />
+        <span id="search-hint" class="visually-hidden"
+          >Enter a city name and press Enter to update all weather panels.</span
+        >
         <button id="search-btn" type="submit">
           <span class="button-label">Search</span
           ><span class="button-loader" aria-hidden="true"></span>

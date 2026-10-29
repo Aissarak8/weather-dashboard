@@ -109,6 +109,7 @@ function renderWeather(current, forecast) {
   const todayKey = getDateKey(current.dt, timezone);
   const today = days.find((day) => day.key === todayKey);
   const condition = current.weather[0];
+  document.body.dataset.phase = condition.icon.endsWith("n") ? "night" : "day";
 
   text("current-location", `${current.name}, ${current.sys.country}`);
   text("weather-description", condition.description);
@@ -266,12 +267,14 @@ function setLoading(loading, message = "") {
   searchButton.disabled = loading;
   searchButton.classList.toggle("is-loading", loading);
   dashboard.setAttribute("aria-busy", String(loading));
+  dashboard.classList.toggle("is-loading", loading);
   if (loading) showStatus(message);
 }
 
 function showStatus(message, isError = false, timeout = 0) {
   statusMessage.textContent = message;
   statusMessage.classList.toggle("is-error", isError);
+  statusMessage.setAttribute("role", isError ? "alert" : "status");
   statusMessage.classList.add("is-visible");
   window.clearTimeout(showStatus.timer);
   if (timeout) {

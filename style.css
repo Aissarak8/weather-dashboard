@@ -43,6 +43,34 @@ body {
   font-family: "DM Sans", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+body[data-phase="day"] {
+  background:
+    radial-gradient(
+      circle at 18% -8%,
+      rgba(58, 148, 183, 0.25),
+      transparent 36rem
+    ),
+    radial-gradient(
+      circle at 90% 5%,
+      rgba(255, 184, 105, 0.08),
+      transparent 30rem
+    ),
+    linear-gradient(150deg, var(--bg), var(--deep));
+}
+body[data-phase="night"] {
+  background:
+    radial-gradient(
+      circle at 22% -10%,
+      rgba(66, 93, 174, 0.23),
+      transparent 38rem
+    ),
+    radial-gradient(
+      circle at 90% 5%,
+      rgba(112, 77, 174, 0.13),
+      transparent 32rem
+    ),
+    linear-gradient(150deg, #080d1b, #030710);
+}
 button,
 input {
   font: inherit;
@@ -280,6 +308,7 @@ button {
   padding-bottom: 20px;
 }
 .panel {
+  position: relative;
   overflow: hidden;
   background: linear-gradient(
     145deg,
@@ -289,6 +318,20 @@ button {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+}
+.dashboard.is-loading .panel::after {
+  position: absolute;
+  z-index: 8;
+  inset: 0;
+  content: "";
+  background: linear-gradient(
+    100deg,
+    rgba(12, 27, 44, 0.96) 30%,
+    rgba(28, 52, 76, 0.96) 48%,
+    rgba(12, 27, 44, 0.96) 66%
+  );
+  background-size: 240% 100%;
+  animation: skeleton-shift 1.4s ease-in-out infinite;
 }
 .status-message {
   position: absolute;
@@ -711,6 +754,11 @@ h1 {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+@keyframes skeleton-shift {
+  to {
+    background-position: -180% 0;
   }
 }
 
